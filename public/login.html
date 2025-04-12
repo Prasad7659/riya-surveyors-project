@@ -1,0 +1,42 @@
+<!-- public/login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-container">
+        <p id="login-message" style="color: red; text-align: center;"></p>
+        <h2>Admin Login</h2>
+        <img src="logo.png" alt="logo" width="100px" height="100px">
+        <p id="error-message"></p>
+        <form>
+            <!-- <label for="username">Username:</label> -->
+            <input type="text" id="username" name="username" placeholder="username" required>
+
+            <!-- <label for="password">Password:</label> -->
+            <input type="password" id="password" name="password" placeholder="password" required>
+
+            <button id="loginBtn" type="submit" onclick="validateLogin()">Login</button>
+            <a href="index.html">⬅️ Go back</a>
+        </form>
+    </div>
+    <footer>
+        <p>© Riya Surveyors. All Rights Reserved.</p>
+    </footer>
+    <script src="app.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const loginMsg = document.getElementById('login-message');
+      
+        if (params.get('timeout') === 'true') {
+          loginMsg.textContent = 'Your session timed out. Please login again.';
+        } else if (params.get('expired') === 'true') {
+          loginMsg.textContent = 'Session expired. Please login again.';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+--> Uses advanced survey techniques for the selected optimal route.
+
+--> Route marking and profiling are executed using Drone, DGPS, and Total Station, with reference levels
+recorded.
+
+--> Complete profiling details are digitized, and computer-aided tower spotting is conducted.

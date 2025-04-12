@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Page</title>
+    <link rel="stylesheet" href="style.css">
+    <!--Bootstrap Starts-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <!--Bootstrap Configuration End-->
+    <meta http-equiv="Cache-Control" content="no-store" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+</head>
+<body style="background-image: url(logo.png); background-repeat: no-repeat; background-position: center; height: 100vh; background-size: auto;">
+    <div class="header">
+        <div class="row">
+            <div class="col col-4">
+                <div class="header-container">
+                    <div class="Header-logo">
+                        <img src="logo-removebg-preview.png" class="logo">
+                    </div>
+                    
+                    <div class="header-title">
+                        <Strong>Riya Surveyors</Strong  >
+                    </div>
+                </div>  
+            </div>
+            <div class="col col-2"></div>
+            <div class="col col-5 nav-bar">
+                <div class="row"></div>
+                <div class="row">
+                </div>
+                <div class="row"></div>
+            </div>
+            <div class="col col-1 right-section">
+                <div class="mobile-controls">
+                  <div class="profile-wrapper">
+                    <div class="profile-icon">
+                      <i class="bi bi-person"></i> <!-- Bootstrap person icon -->
+                    </div>
+                    <div class="dropdown-menu">
+                      <a href="#" id="profileLink" onclick="myProfile()">My Profile</a>
+                      <a href="#">Manage Services</a>
+                      <a href="#" id="manageGallery" onclick="OpenGallery()">Manage Gallery</a>
+                      <a href="#" onclick="logout()">Logout</a>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h1 style="margin-top: 130px; text-align: center;">Welcome to Admin Dashboard</h1>
+<!--Profile Modal -->
+<div id="profileModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeProfileModal()">&times;</span>
+
+    <div id="profileSection">
+      <h3>Profile</h3>
+      <label>Username: <input type="text" id="username" value="admin" readonly></label><br>
+      <label>Password: <input type="password" id="password" value="********" readonly></label><br>
+      <button id="showUpdateForm" onclick="updateform()">Update Password</button>
+    </div>
+
+    <div id="updatePasswordSection" style="display: none; margin-top: 20px;">
+      <h3>Update Password</h3>
+      <label>Old Password: <input type="password" id="oldPassword"></label><br>
+      <label>New Password: <input type="password" id="newPassword"></label><br>
+      <label>Confirm Password: <input type="password" id="confirmPassword"></label><br>
+      <button id="updatePasswordBtn" onclick="UpdatePassword()">Confirm</button>
+      <p id="updateMsg"></p>
+    </div>
+
+  </div>
+</div>
+<!--Gallery Modal-->
+<div id="galleryModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Gallery Admin</h2>
+
+    <form id="uploadForm" enctype="multipart/form-data"  action="/api/gallery/upload" method="POST">
+      <input type="file" name="image" accept="image/*" required>
+      <button type="submit">Upload Image</button>
+    </form>
+
+    <div id="galleryList" class="gallery-images"></div>
+  </div>
+</div>
+
+    <div class="admin-wrapper">
+      <div class="admin-content">
+        <!-- Content loads here after clicking buttons -->
+      </div>
+  
+      <footer>
+        <p>© Riya Surveyors. All Rights Reserved.</p>
+    </footer>
+    </div>
+    <script src="app.js"></script>
+    <script>
+        // When the page is shown (including back navigation)
+        window.addEventListener('pageshow', (event) => {
+          // If coming from cache (back button), force reload
+          if (event.persisted) {
+            window.location.reload();
+            return;
+          }
+      
+          // Otherwise, check session
+          fetch('/check-session')
+            .then(res => res.json())
+            .then(data => {
+              if (!data.loggedIn) {
+                // Redirect with expired flag
+                window.location.href = '/login.html?expired=true';
+              }
+            })
+            .catch(() => {
+              window.location.href = '/login.html?expired=true'; // fallback
+            });
+        });
+      
+        let lastActivityTime = Date.now();
+      
+        // Reset activity timer on mouse or key press
+        document.addEventListener('mousemove', resetTimer);
+        document.addEventListener('keydown', resetTimer);
+      
+        function resetTimer() {
+          lastActivityTime = Date.now();
+        }
+      
+        // Check for inactivity every 10 seconds
+        setInterval(() => {
+          const now = Date.now();
+          const elapsed = now - lastActivityTime;
+      
+          // 15 minutes = 15 * 60 * 1000
+          if (elapsed > 15 * 60 * 1000) {
+            // Redirect to login with a timeout message
+            window.location.href = '/login.html?timeout=true';
+          }
+        }, 10000);
+    </script>
+  </body>
+</html>

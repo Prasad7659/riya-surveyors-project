@@ -15,10 +15,10 @@
         <p id="error-message"></p>
         <form>
             <!-- <label for="username">Username:</label> -->
-            <input type="text" id="username" name="username" placeholder="username" required>
+            <input type="text" id="username" name="username" placeholder="username" minlength="5" maxlength="15">
 
             <!-- <label for="password">Password:</label> -->
-            <input type="password" id="password" name="password" placeholder="password" required>
+            <input type="password" id="password" name="password" placeholder="password" required minlength="8" maxlength="12">
 
             <button id="loginBtn" type="submit" onclick="validateLogin()">Login</button>
             <a href="index.html">⬅️ Go back</a>

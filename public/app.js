@@ -380,3 +380,198 @@ function OpenGallery() {
     }
   });
 }
+//checkbox validation for service form
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('serviceform');
+
+  form.addEventListener('submit', function(event) {
+    const checkboxes = form.querySelectorAll('input[type="checkbox"][name="service"]');
+    const atLeastOneChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+
+    if (!atLeastOneChecked) {
+      event.preventDefault(); // Stop form submission
+      alert('Please select at least one service before submitting the form.');
+    }
+  });
+});
+//erase service form on close or successfull submit
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("serviceform");
+  const modalEl = document.getElementById("exampleModal");
+
+  if (!form || !modalEl) return;
+
+  // Reset form when modal is closed
+  modalEl.addEventListener('hidden.bs.modal', function () {
+    form.reset();
+  });
+
+  // Handle form submission
+  form.addEventListener("submit", function (e) {
+    e.preventDefault(); // Prevent default behavior
+
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+      method: form.method,
+      body: formData,
+      headers: {
+        'Accept': 'application/json'
+      }
+    }).then(response => {
+      if (response.ok) {
+        form.reset();
+
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
+
+        alert("Your request has been submitted successfully!");
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    }).catch(error => {
+      console.error("Form error:", error);
+      alert("There was a problem submitting the form.");
+    });
+  });
+});
+//erase contact form after successsful submission
+document.addEventListener("DOMContentLoaded", function () {
+  const contactForm = document.getElementById("contactForm");
+
+  if (!contactForm) return;
+
+  contactForm.addEventListener("submit", function (e) {
+    e.preventDefault(); // Prevent default form action
+
+    const formData = new FormData(contactForm);
+
+    fetch(contactForm.action, {
+      method: contactForm.method,
+      body: formData,
+      headers: {
+        'Accept': 'application/json'
+      }
+    }).then(response => {
+      if (response.ok) {
+        contactForm.reset();
+        alert("Your message has been submitted successfully!");
+      } else {
+        alert("Submission failed. Please try again.");
+      }
+    }).catch(error => {
+      console.error("Form error:", error);
+      alert("There was a problem submitting the form.");
+    });
+  });
+});
+//validate contact form
+document.addEventListener("DOMContentLoaded", function () {
+  const contactForm = document.getElementById("contactForm");
+  const emailInput = document.getElementById("email");
+  const firstNameInput = document.getElementById("firstName");
+  const lastNameInput = document.getElementById("lastName");
+  const mobileInput = document.getElementById("mobile");
+
+  const emailError = document.getElementById("emailError");
+  const firstnameError = document.getElementById("firstnameError");
+  const lastnameError = document.getElementById("lastnameError");
+  const mobileError = document.getElementById("mobileError");
+
+  if (
+    !contactForm ||
+    !emailInput ||
+    !firstNameInput ||
+    !lastNameInput ||
+    !mobileInput ||
+    !emailError ||
+    !firstnameError ||
+    !lastnameError ||
+    !mobileError
+  ) return;
+
+  // Email validation
+  emailInput.addEventListener("input", function () {
+    const email = emailInput.value;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    emailError.textContent = !emailRegex.test(email)
+      ? "Please enter a valid email address."
+      : "";
+  });
+
+  // First Name validation
+  firstNameInput.addEventListener("input", function () {
+    const firstName = firstNameInput.value;
+    const nameRegex = /^[A-Za-z\s]+$/;
+    firstnameError.textContent = !nameRegex.test(firstName)
+      ? "First name can only contain letters and spaces."
+      : "";
+  });
+
+  // Last Name validation
+  lastNameInput.addEventListener("input", function () {
+    const lastName = lastNameInput.value;
+    const nameRegex = /^[A-Za-z\s]+$/;
+    lastnameError.textContent = !nameRegex.test(lastName)
+      ? "Last name can only contain letters and spaces."
+      : "";
+  });
+
+  
+  // Mobile validation (restrict to digits only + validate 10-digit Indian format)
+mobileInput.addEventListener("input", function (e) {
+  // Allow only digits and update the input value with only digits
+  mobileInput.value = mobileInput.value.replace(/\D/g, '');
+
+  const mobile = mobileInput.value;
+  const mobileRegex = /^[6-9][0-9]{9}$/;
+
+  // Handle the validation feedback
+  if (mobile.length === 0) {
+    mobileError.textContent = "";
+  } else if (mobile.length < 10) {
+    mobileError.textContent = "Mobile number must be exactly 10 digits.";
+  } else if (!mobileRegex.test(mobile)) {
+    mobileError.textContent = "Mobile number must start with digits 6-9.";
+  } else {
+    mobileError.textContent = "";
+  }
+});
+
+  // Submit handler
+  contactForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    if (
+      !emailError.textContent &&
+      !firstnameError.textContent &&
+      !lastnameError.textContent &&
+      !mobileError.textContent
+    ) {
+      const formData = new FormData(contactForm);
+      fetch(contactForm.action, {
+        method: contactForm.method,
+        body: formData,
+        headers: {
+          'Accept': 'application/json'
+        }
+      })
+        .then(response => {
+          if (response.ok) {
+            contactForm.reset();
+            alert("Your message has been submitted successfully!");
+          } else {
+            alert("Submission failed. Please try again.");
+          }
+        })
+        .catch(error => {
+          console.error("Form submission error:", error);
+          alert("There was a problem submitting the form.");
+        });
+    }
+  });
+});
+
+function closenav() {
+  document.querySelector(".nav-bar").classList.remove("active");
+}

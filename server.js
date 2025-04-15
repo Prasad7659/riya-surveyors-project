@@ -77,31 +77,43 @@ app.get('/logout', (req, res) => {
   }
   
   // Save users to file
+  const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d])[A-Za-z\d\W]{8,12}$/;
+
   function saveUsers(users) {
     fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
   }
-app.post("/api/update-password", (req, res) => {
-  const { username, oldPassword, newPassword, confirmPassword } = req.body;
-
-  if (!req.session.loggedIn) {
-    return res.status(401).json({ success: false, message: "Unauthorized" });
-  }
-
-  const users = loadUsers();
-  const user = users[username];
-
-  if (!user || user.password !== oldPassword) {
-    return res.json({ success: false, message: "Old password is incorrect" });
-  }
-
-  if (newPassword !== confirmPassword) {
-    return res.json({ success: false, message: "Passwords do not match" });
-  }
-
-  users[username].password = newPassword;
-  saveUsers(users); // 🔥 Persist changes
-  res.json({ success: true, message: "Password updated successfully" });
-});
+  
+  app.post("/api/update-password", (req, res) => {
+    const { username, oldPassword, newPassword, confirmPassword } = req.body;
+  
+    if (!req.session.loggedIn) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+  
+    const users = loadUsers();
+    const user = users[username];
+  
+    if (!user || user.password !== oldPassword) {
+      return res.json({ success: false, message: "Old password is incorrect" });
+    }
+  
+    if (newPassword !== confirmPassword) {
+      return res.json({ success: false, message: "Passwords do not match" });
+    }
+  
+    if (!PASSWORD_REGEX.test(newPassword)) {
+      return res.json({
+        success: false,
+        message:
+          "Password must be 8-12 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character",
+      });
+    }
+  
+    users[username].password = newPassword;
+    saveUsers(users);
+    res.json({ success: true, message: "Password updated successfully" });
+  });
+  
 
 app.use(express.static('public'));
 

@@ -42,9 +42,9 @@
                       <i class="bi bi-person"></i> <!-- Bootstrap person icon -->
                     </div>
                     <div class="dropdown-menu">
-                      <a href="#" id="profileLink" onclick="myProfile()">My Profile</a>
-                      <a href="#">Manage Services</a>
-                      <a href="#" id="manageGallery" onclick="OpenGallery()">Manage Gallery</a>
+                      <a href="#" id="profileLink" data-bs-toggle="modal" data-bs-target="#profileModal">My Profile</a>
+                      <a href="#" data-bs-toggle="modal" data-bs-target="#serviceModal">Manage Services</a>
+                      <a href="#" id="manageGallery" data-bs-toggle="modal" data-bs-target="#galleryModal">Manage Gallery</a>
                       <a href="#" onclick="logout()">Logout</a>
                     </div>
                   </div>
@@ -53,43 +53,141 @@
         </div>
     </div>
     <h1 style="margin-top: 130px; text-align: center;">Welcome to Admin Dashboard</h1>
-<!--Profile Modal -->
-<div id="profileModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeProfileModal()">&times;</span>
+    <!-- Manage Services Modal -->
+  <div class="modal fade" id="serviceModal" tabindex="-1" aria-labelledby="serviceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="serviceModalLabel">Manage Services</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
 
-    <div id="profileSection">
-      <h3>Profile</h3>
-      <label>Username: <input type="text" id="username" value="admin" readonly></label><br>
-      <label>Password: <input type="password" id="password" value="********" readonly></label><br>
-      <button id="showUpdateForm" onclick="updateform()">Update Password</button>
+        <div class="modal-body overflow-auto">
+          <!-- Form -->
+          <h5>Add New Service</h5>
+          <form action="/add-service" method="POST" enctype="multipart/form-data" class="mb-4">
+            <div class="mb-3">
+              <label class="form-label">Title</label>
+              <input type="text" name="title" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea name="description" class="form-control" rows="4" required></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Image</label>
+              <input type="file" name="image" accept="image/*" class="form-control" required>
+            </div>
+
+            <button type="submit" class="btn btn-success">Submit</button>
+          </form>
+
+          <hr>
+
+          <!-- Table -->
+          <h5>Existing Services</h5>
+          <table class="table table-bordered table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>Title</th>
+                <th style="width: 80px;">Delete</th>
+              </tr>
+            </thead>
+            <tbody id="services-body">
+              <!-- Rows will be populated here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
+  </div>
+<!-- Profile Modal -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
 
-    <div id="updatePasswordSection" style="display: none; margin-top: 20px;">
-      <h3>Update Password</h3>
-      <label>Old Password: <input type="password" id="oldPassword"></label><br>
-      <label>New Password: <input type="password" id="newPassword"></label><br>
-      <label>Confirm Password: <input type="password" id="confirmPassword"></label><br>
-      <button id="updatePasswordBtn" onclick="UpdatePassword()">Confirm</button>
-      <p id="updateMsg" style="color: red;"></p>
+      <div class="modal-header">
+        <h5 class="modal-title" id="profileModalLabel">Profile</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <!-- Profile Info Section -->
+        <div id="profileSection">
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" id="username" class="form-control" value="admin" readonly>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" id="password" class="form-control" value="********" readonly>
+          </div>
+
+          <button class="btn btn-primary" id="showUpdateForm" onclick="updateform()">Update Password</button>
+        </div>
+
+        <!-- Update Password Section (Hidden by Default) -->
+        <div id="updatePasswordSection" style="display: none; margin-top: 20px;">
+          <h5 class="mb-3">Update Password</h5>
+
+          <div class="mb-3">
+            <label class="form-label">Old Password</label>
+            <input type="password" id="oldPassword" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">New Password</label>
+            <input type="password" id="newPassword" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Confirm Password</label>
+            <input type="password" id="confirmPassword" class="form-control">
+          </div>
+
+          <button class="btn btn-success" id="updatePasswordBtn" onclick="UpdatePassword()">Confirm</button>
+
+          <p id="updateMsg" class="mt-2 text-danger"></p>
+        </div>
+
+      </div>
     </div>
-
   </div>
 </div>
-<!--Gallery Modal-->
-<div id="galleryModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <h2>Gallery Admin</h2>
+<!-- Gallery Modal -->
+<div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
 
-    <form id="uploadForm" enctype="multipart/form-data"  action="/api/gallery/upload" method="POST">
-      <input type="file" name="image" accept="image/*" required>
-      <button type="submit">Upload Image</button>
-    </form>
+      <div class="modal-header">
+        <h5 class="modal-title" id="galleryModalLabel">Gallery Admin</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
 
-    <div id="galleryList" class="gallery-images"></div>
+      <div class="modal-body">
+
+        <!-- Upload Form -->
+        <form id="uploadForm" enctype="multipart/form-data" action="/api/gallery/upload" method="POST" class="mb-4">
+          <div class="mb-3">
+            <input type="file" name="image" accept="image/*" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Upload Image</button>
+        </form>
+
+        <!-- Gallery Images Container -->
+        <div id="galleryList" class="gallery-images">
+          <!-- Images will be populated here -->
+        </div>
+
+      </div>
+    </div>
   </div>
 </div>
+
 
     <div class="admin-wrapper">
       <div class="admin-content">
@@ -145,6 +243,42 @@
             window.location.href = '/login.html?timeout=true';
           }
         }, 10000);
+
+        //new
+        async function loadServices() {
+      const res = await fetch('/services');
+      const services = await res.json();
+
+      const tbody = document.getElementById('services-body');
+      tbody.innerHTML = '';
+
+      services.forEach(service => {
+        const row = document.createElement('tr');
+
+        const titleCell = document.createElement('td');
+        titleCell.textContent = service.title;
+
+        const deleteCell = document.createElement('td');
+        const deleteBtn = document.createElement('span');
+        deleteBtn.innerHTML = '🗑️';
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.onclick = async () => {
+          if (confirm(`Delete "${service.title}"?`)) {
+            await fetch(`/delete-service/${service.folder}`, { method: 'DELETE' });
+            loadServices(); // Reload table
+          }
+        };
+
+        deleteCell.appendChild(deleteBtn);
+        row.appendChild(titleCell);
+        row.appendChild(deleteCell);
+
+        tbody.appendChild(row);
+      });
+    }
+
+    loadServices();
+    loadGallery();
     </script>
   </body>
 </html>

@@ -153,7 +153,7 @@ app.post('/api/gallery/upload', upload.single('image'), (req, res) => {
           console.error('Upload failed:', err);
           return res.status(500).send('Upload failed');
       }
-      res.send('Image uploaded successfully');
+      res.send('Image uploaded successfully</h2><a href="/admin.html">Go Back</a>');
   });
 });
 
@@ -208,6 +208,80 @@ app.get('/check-session', (req, res) => {
     res.json({ loggedIn: !!req.session.loggedIn });
   });
 
+//Add-Services
+app.use(express.urlencoded({ extended: true }));
+
+// Setup multer for image uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const tempDir = 'temp_uploads';
+    if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
+    cb(null, tempDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + path.extname(file.originalname);
+    cb(null, uniqueName);
+  }
+});
+const serviceUpload = multer({ storage }); // 👈 renamed from 'upload' to 'serviceUpload'
+
+// Handle form submission
+app.post('/add-service', serviceUpload.single('image'), (req, res) => {
+  const { title, description } = req.body;
+  const image = req.file;
+
+  const servicesDir = path.join(__dirname, 'services');
+  if (!fs.existsSync(servicesDir)) fs.mkdirSync(servicesDir);
+
+  const existingFolders = fs.readdirSync(servicesDir).filter(name => name.startsWith('service'));
+  const newIndex = existingFolders.length + 1;
+  const newServicePath = path.join(servicesDir, `service${newIndex}`);
+
+  // Create new folder
+  fs.mkdirSync(newServicePath);
+
+  // Save title.txt
+  fs.writeFileSync(path.join(newServicePath, 'title.txt'), title);
+
+  // Save description.txt
+  fs.writeFileSync(path.join(newServicePath, 'description.txt'), description);
+
+  // Move image file
+  const imageExt = path.extname(image.originalname);
+  const destImagePath = path.join(newServicePath, `image${imageExt}`);
+  fs.renameSync(image.path, destImagePath);
+
+  res.send(`<h2>Service Added Successfully!</h2><a href="/admin.html">Go Back</a>`);
+});
+//delete service
+// Route to get existing services
+app.get('/services', (req, res) => {
+  const servicesDir = path.join(__dirname, 'services');
+  if (!fs.existsSync(servicesDir)) return res.json([]);
+
+  const folders = fs.readdirSync(servicesDir).filter(f => f.startsWith('service'));
+  const services = folders.map(folder => {
+    const titlePath = path.join(servicesDir, folder, 'title.txt');
+    let title = folder;
+    if (fs.existsSync(titlePath)) {
+      title = fs.readFileSync(titlePath, 'utf-8');
+    }
+    return { folder, title };
+  });
+
+  res.json(services);
+});
+app.delete('/delete-service/:folderName', (req, res) => {
+  const folderName = req.params.folderName;
+  const folderPath = path.join(__dirname, 'services', folderName);
+
+  if (fs.existsSync(folderPath)) {
+    fs.rmSync(folderPath, { recursive: true, force: true });
+    res.json({ message: 'Deleted successfully' });
+  } else {
+    res.status(404).json({ message: 'Service not found' });
+  }
+});
 //Display Servives configuration ends
 // Start server
 app.listen(3000, () => console.log('Server running on port 3000'));

@@ -163,7 +163,7 @@ html, body {
 .nav a{
     /* color: white; */
     
-    padding: 15px;
+    padding:  5px 15px;
     font-size: large;
     text-decoration: none;
     font-weight: 500;
@@ -171,8 +171,8 @@ html, body {
 .nav a:hover{
     background-color: #007bff;
     color: white;
-    border-radius: 5px;
-    padding: 10px 5px 10px 5px;
+    border-radius: 15px; /* modified from 10 to 15 */
+    /* padding: 10px 5px 10px 5px; */ /*hover issue between 2 anchors */
     font-weight: bolder;
 }
 .right-section {

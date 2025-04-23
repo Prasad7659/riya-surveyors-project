@@ -116,12 +116,12 @@ document.addEventListener('keydown', (event) => {
 
 
 function map(){
-    var map = L.map("map").setView([17.354123258621595, 78.47698782286838], 15); // Replace with your coordinates
+    var map = L.map("map").setView([17.50185384358071, 78.54107151866575], 15); // Replace with your coordinates
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
-        L.marker([17.354123258621595, 78.47698782286838]).addTo(map).bindPopup("Riya Surveyors").openPopup();
+        L.marker([17.50185384358071, 78.54107151866575]).addTo(map).bindPopup("Riya Surveyors").openPopup();
 }
 function recenterMap() {
-    map.setView([17.354123258621595, 78.47698782286838], 13); // Reset to original location & zoom
+    map.setView([17.50185384358071, 78.54107151866575], 13); // Reset to original location & zoom
 }
 function getDirections() {
     if (navigator.geolocation) {
@@ -130,7 +130,7 @@ function getDirections() {
             var userLng = position.coords.longitude;
             
             // Open Google Maps with Directions
-            var googleMapsUrl = `https://www.google.com/maps/dir/${userLat},${userLng}/17.354123258621595,78.47698782286838`;
+            var googleMapsUrl = `https://www.google.com/maps/dir/${userLat},${userLng}/17.50185384358071, 78.54107151866575`;
             window.open(googleMapsUrl, "_blank");
         }, function(error) {
             alert("Geolocation not supported or permission denied.");
@@ -518,15 +518,51 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   
-  // Mobile validation (restrict to digits only + validate 10-digit Indian format)
-mobileInput.addEventListener("input", function (e) {
-  // Allow only digits and update the input value with only digits
-  mobileInput.value = mobileInput.value.replace(/\D/g, '');
+//   // Mobile validation (restrict to digits only + validate 10-digit Indian format)
+// mobileInput.addEventListener("input", function (e) {
+//   // Allow only digits and update the input value with only digits
+//   mobileInput.value = mobileInput.value.replace(/\D/g, '');
+
+//   const mobile = mobileInput.value;
+//   const mobileRegex = /^[6-9][0-9]{9}$/;
+
+//   // Handle the validation feedback
+//   if (mobile.length === 0) {
+//     mobileError.textContent = "";
+//   } else if (mobile.length < 10) {
+//     mobileError.textContent = "Mobile number must be exactly 10 digits.";
+//   } else if (!mobileRegex.test(mobile)) {
+//     mobileError.textContent = "Mobile number must start with digits 6-9.";
+//   } else {
+//     mobileError.textContent = "";
+//   }
+// });
+
+// Block non-digits during typing and pasting
+mobileInput.addEventListener("beforeinput", function (e) {
+  const inputChar = e.data;
+
+  // If inputChar is null (like when deleting), skip validation
+  if (inputChar && /\D/.test(inputChar)) {
+    e.preventDefault();
+  }
+});
+
+// Also handle paste event
+mobileInput.addEventListener("paste", function (e) {
+  const pastedData = (e.clipboardData || window.clipboardData).getData("text");
+  if (/\D/.test(pastedData)) {
+    e.preventDefault();
+  }
+});
+
+// Validate after input
+mobileInput.addEventListener("input", function () {
+  mobileInput.value = mobileInput.value.replace(/\D/g, ''); // clean-up just in case
 
   const mobile = mobileInput.value;
   const mobileRegex = /^[6-9][0-9]{9}$/;
 
-  // Handle the validation feedback
   if (mobile.length === 0) {
     mobileError.textContent = "";
   } else if (mobile.length < 10) {
@@ -575,3 +611,11 @@ mobileInput.addEventListener("input", function (e) {
 function closenav() {
   document.querySelector(".nav-bar").classList.remove("active");
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const nameInput = document.getElementById("name");
+
+  nameInput.addEventListener("input", function () {
+    this.value = this.value.replace(/[^A-Za-z\s]/g, "");
+  });
+});

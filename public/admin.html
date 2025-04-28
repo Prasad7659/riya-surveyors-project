@@ -81,6 +81,10 @@
               <input type="file" name="image" accept="image/*" class="form-control" required>
             </div>
 
+            <div class="mb-3">
+              <p style="color: red;">Note: images with size  x x y are preferable</p>
+            </div>
+
             <button type="submit" class="btn btn-success">Submit</button>
           </form>
 
@@ -172,6 +176,9 @@
 
         <!-- Upload Form -->
         <form id="uploadForm" enctype="multipart/form-data" action="/api/gallery/upload" method="POST" class="mb-4">
+          <div class="mb-3">
+            <p style="color: red;">Note: Consider uploading HD images</p>
+          </div>
           <div class="mb-3">
             <input type="file" name="image" accept="image/*" class="form-control" required>
           </div>

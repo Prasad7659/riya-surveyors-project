@@ -381,6 +381,29 @@ function OpenGallery() {
   });
 }
 //checkbox validation for service form
+// document.addEventListener('DOMContentLoaded', () => {
+//   const form = document.getElementById('serviceform');
+//   const errorMessage = document.createElement('p'); // Create a paragraph element for error message
+//   errorMessage.style.color = 'red'; // Style it (red text color)
+//   errorMessage.style.display = 'none'; // Hide it initially
+
+//   form.appendChild(errorMessage); // Append the error message to the form
+
+//   form.addEventListener('submit', function(event) {
+//     const checkboxes = form.querySelectorAll('input[type="checkbox"][name="service"]');
+//     const atLeastOneChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+
+//     if (!atLeastOneChecked) {
+//       event.preventDefault(); // Stop form submission
+//       errorMessage.textContent = 'Please select at least one service before submitting the form.'; // Show the error message
+//       errorMessage.style.display = 'block'; // Make the error message visible
+//     } else {
+//       errorMessage.style.display = 'none'; // Hide the error message if the form is valid
+//     }
+//   });
+// });
+// service checkbox validation not working
+// mobile number in contact form validation partially working
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('serviceform');
 

@@ -411,7 +411,7 @@ body{
 }
 .directions { top: 90%; left: 81%; }
 .client-container{
-    margin: 0 100px;
+    margin: 0 30px;
     border: solid antiquewhite 1px;
     box-shadow: 0px 2px 3px grey;
     padding: 3px;
@@ -596,7 +596,8 @@ button:hover {
 .service img {
     width: 100%; /* Make the image responsive */
     max-width: 200px; /* Set a max width */
-    height: auto;
+    height: 100%;
+    max-height: 200px;
     object-fit: cover;
     border-radius: 5px;
 }

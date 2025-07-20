@@ -42,7 +42,9 @@
                       <i class="bi bi-person"></i> <!-- Bootstrap person icon -->
                     </div>
                     <div class="dropdown-menu">
+                      <a href="index.html" id="index_home">View HomePage</a>
                       <a href="#" id="profileLink" data-bs-toggle="modal" data-bs-target="#profileModal">My Profile</a>
+                      <a href="#" id="invoice" data-bs-toggle="modal" data-bs-target="#invoiceModal">Generate Invoice</a>
                       <a href="#" data-bs-toggle="modal" data-bs-target="#serviceModal">Manage Services</a>
                       <a href="#" id="manageGallery" data-bs-toggle="modal" data-bs-target="#galleryModal">Manage Gallery</a>
                       <a href="#" onclick="logout()">Logout</a>
@@ -53,6 +55,36 @@
         </div>
     </div>
     <h1 style="margin-top: 130px; text-align: center;">Welcome to Admin Dashboard</h1>
+    <!--invoice form modal-->
+    <div class="modal fade" id="invoiceModal" tabindex="-1" aria-labelledby="invoiceModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="invoiceModalLabel">Generate Invoice</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+    
+            <!-- Your Invoice Form -->
+            <form id="invoiceForm" class="invoice-form">
+              <label>Client Name: <input name="clientName" class="form-control" required /></label><br />
+              <label>Address: <input name="address" class="form-control" required /></label><br />
+              <label>GST No: <input name="gstNo" class="form-control" required /></label><br />
+              <label>Invoice No: <input name="invoiceNo" class="form-control" required /></label><br />
+              <label>Date: <input type="date" name="invoiceDate" class="form-control" required /></label><br />
+              <label>Work Description: <input name="description" class="form-control" required /></label><br />
+              <label>Quantity: <input type="number" name="quantity" class="form-control" required /></label><br />
+              <label>Rate: <input type="number" name="rate" class="form-control" required /></label><br />
+              <div class="text-end mt-3">
+                <button class="btn btn-primary">Preview</button>
+                <button type="submit" class="btn btn-primary">Generate</button>
+              </div>
+            </form>
+    
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Manage Services Modal -->
   <div class="modal fade" id="serviceModal" tabindex="-1" aria-labelledby="serviceModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">

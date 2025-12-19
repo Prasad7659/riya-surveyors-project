@@ -532,6 +532,7 @@ body{
 
 }
 .contactsection h2{
+    margin-top: 7px;
     text-align: center;
 }
 .contact-form {
@@ -589,6 +590,7 @@ button:hover {
     background: #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     cursor: pointer;
+    height: 470px;
 }
 .service:hover{
     background-color: #f0f0f0;

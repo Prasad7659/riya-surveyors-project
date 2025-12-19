@@ -430,64 +430,45 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Handle form submission
-  form.addEventListener("submit", function (e) {
-    e.preventDefault(); // Prevent default behavior
+  // form.addEventListener("submit", function (e) {
+  //   e.preventDefault(); // Prevent default behavior
 
-    const formData = new FormData(form);
+  //   const formData = new FormData(form);
 
-    fetch(form.action, {
-      method: form.method,
-      body: formData,
-      headers: {
-        'Accept': 'application/json'
-      }
-    }).then(response => {
-      if (response.ok) {
-        form.reset();
+  //   fetch(form.action, {
+  //     method: form.method,
+  //     body: formData,
+  //     headers: {
+  //       'Accept': 'application/json'
+  //     }
+  //   }).then(response => {
+  //     if (response.ok) {
+  //       form.reset();
 
-        const modalInstance = bootstrap.Modal.getInstance(modalEl);
-        if (modalInstance) modalInstance.hide();
+  //       const modalInstance = bootstrap.Modal.getInstance(modalEl);
+  //       if (modalInstance) modalInstance.hide();
 
-        alert("Your request has been submitted successfully!");
-      } else {
-        alert("Something went wrong. Please try again.");
-      }
-    }).catch(error => {
-      console.error("Form error:", error);
-      alert("There was a problem submitting the form.");
-    });
-  });
+  //       alert("Your request has been submitted successfully!");
+  //     } else {
+  //       alert("Something went wrong. Please try again.");
+  //     }
+  //   }).catch(error => {
+  //     console.error("Form error:", error);
+  //     alert("There was a problem submitting the form.");
+  //   });
+  // });
 });
 //erase contact form after successsful submission
 document.addEventListener("DOMContentLoaded", function () {
   const contactForm = document.getElementById("contactForm");
-
   if (!contactForm) return;
 
-  contactForm.addEventListener("submit", function (e) {
-    e.preventDefault(); // Prevent default form action
-
-    const formData = new FormData(contactForm);
-
-    fetch(contactForm.action, {
-      method: contactForm.method,
-      body: formData,
-      headers: {
-        'Accept': 'application/json'
-      }
-    }).then(response => {
-      if (response.ok) {
-        contactForm.reset();
-        alert("Your message has been submitted successfully!");
-      } else {
-        alert("Submission failed. Please try again.");
-      }
-    }).catch(error => {
-      console.error("Form error:", error);
-      alert("There was a problem submitting the form.");
-    });
+  // 🔥 Reset when custom success event is fired
+  contactForm.addEventListener("formSuccess", function () {
+    contactForm.reset();
   });
 });
+
 //validate contact form
 document.addEventListener("DOMContentLoaded", function () {
   const contactForm = document.getElementById("contactForm");
@@ -598,37 +579,37 @@ mobileInput.addEventListener("input", function () {
 });
 
   // Submit handler
-  contactForm.addEventListener("submit", function (e) {
-    e.preventDefault();
+  // contactForm.addEventListener("submit", function (e) {
+  //   e.preventDefault();
 
-    if (
-      !emailError.textContent &&
-      !firstnameError.textContent &&
-      !lastnameError.textContent &&
-      !mobileError.textContent
-    ) {
-      const formData = new FormData(contactForm);
-      fetch(contactForm.action, {
-        method: contactForm.method,
-        body: formData,
-        headers: {
-          'Accept': 'application/json'
-        }
-      })
-        .then(response => {
-          if (response.ok) {
-            contactForm.reset();
-            alert("Your message has been submitted successfully!");
-          } else {
-            alert("Submission failed. Please try again.");
-          }
-        })
-        .catch(error => {
-          console.error("Form submission error:", error);
-          alert("There was a problem submitting the form.");
-        });
-    }
-  });
+  //   if (
+  //     !emailError.textContent &&
+  //     !firstnameError.textContent &&
+  //     !lastnameError.textContent &&
+  //     !mobileError.textContent
+  //   ) {
+  //     const formData = new FormData(contactForm);
+  //     fetch(contactForm.action, {
+  //       method: contactForm.method,
+  //       body: formData,
+  //       headers: {
+  //         'Accept': 'application/json'
+  //       }
+  //     })
+  //       .then(response => {
+  //         if (response.ok) {
+  //           contactForm.reset();
+  //           alert("Your message has been submitted successfully!");
+  //         } else {
+  //           alert("Submission failed. Please try again.");
+  //         }
+  //       })
+  //       .catch(error => {
+  //         console.error("Form submission error:", error);
+  //         alert("There was a problem submitting the form.");
+  //       });
+  //   }
+  // });
 });
 
 function closenav() {
@@ -641,4 +622,65 @@ document.addEventListener("DOMContentLoaded", () => {
   nameInput.addEventListener("input", function () {
     this.value = this.value.replace(/[^A-Za-z\s]/g, "");
   });
+});
+
+async function submitForm(form, messageEl) {
+    if (!messageEl) return;
+
+    const formData = new FormData(form);
+    const data = {};
+
+    for (const [key, value] of formData.entries()) {
+        if (data[key]) {
+            if (Array.isArray(data[key])) {
+                data[key].push(value);
+            } else {
+                data[key] = [data[key], value];
+            }
+        } else {
+            data[key] = value;
+        }
+    }
+
+    data.formType = form.id === "serviceform" ? "service" : "contact";
+
+    messageEl.textContent = "Submitting...";
+    messageEl.style.color = "blue";
+
+    try {
+        const response = await fetch("/api/send-mail", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            messageEl.textContent = "✅ Submitted successfully!";
+            messageEl.style.color = "green";
+            form.reset();
+            console.log(result.message);
+        } else {
+            messageEl.textContent = "❌ Submission failed.";
+            messageEl.style.color = "red";
+            console.log(result.message);
+        }
+    } catch (err) {
+        console.error(err);
+        messageEl.textContent = "❌ Server error.";
+        messageEl.style.color = "red";
+    }
+}
+
+
+// Attach handlers
+document.getElementById("serviceform").addEventListener("submit", function (e) {
+    e.preventDefault();
+    submitForm(this, document.getElementById("serviceMsg"));
+});
+
+document.getElementById("contactForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    submitForm(this, document.getElementById("contactMsg"));
 });

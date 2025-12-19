@@ -1,11 +1,18 @@
-const express = require('express');
-const session = require('express-session');
-const cors = require('cors');  // Enable CORS for frontend requests
-const bodyParser = require('body-parser');
-const fs = require('fs');
-const path = require('path');
-const multer = require('multer');
+import express from "express";
+import session from "express-session";
+import cors from "cors";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import multer from "multer";
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const upload = multer({ dest: 'uploads/' });
+
 const app = express();
 
 app.get('/login', (req, res) => {
@@ -293,5 +300,122 @@ app.delete('/delete-service/:folderName', (req, res) => {
   }
 });
 //Display Servives configuration ends
+
+// mail API starts
+
+const transporter = nodemailer.createTransport({
+    host: process.env.MAIL_HOST,
+    port: process.env.MAIL_PORT,
+    secure: false,
+    auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
+    },
+});
+
+function emailTemplate(formType, data) {
+    let rows = "";
+
+    for (let key in data) {
+        if (key !== "formType") {
+            rows += `
+              <tr>
+                <td style="padding:8px;font-weight:bold">${key}</td>
+                <td style="padding:8px">${data[key]}</td>
+              </tr>
+            `;
+        }
+    }
+
+    return `
+    <div style="font-family:Arial;max-width:600px;margin:auto">
+        <div style="text-align:center;padding:20px">
+            <img src="https://riya-surveyors-project.onrender.com/logo.png" width="140" />
+            <h2>${formType.toUpperCase()} FORM SUBMISSION</h2>
+        </div>
+
+        <table border="1" cellspacing="0" width="100%" style="border-collapse:collapse">
+            ${rows}
+        </table>
+
+        <p style="font-size:12px;color:gray;text-align:center;margin-top:20px">
+            This email was sent from your website.
+        </p>
+    </div>
+    `;
+}
+
+export const sendMail = async (req, res) => {
+  try {
+    const data = req.body;
+    console.log("RAW BODY:", req.body);
+
+
+    // 🔴 Basic safety check
+    if (!data || !data.formType) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing form type",
+      });
+    }
+
+    // 🔵 Service form validation
+    if (data.formType === "service") {
+      if (!data.name || !data.mobile || !data.service) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid service form data",
+        });
+      }
+    }
+
+    // 🟢 Contact form validation
+    if (data.formType === "contact") {
+  const name =
+    data.name ||
+    [data.firstName, data.lastName].filter(Boolean).join(" ");
+
+  const message = data.message || data.Message;
+
+  if (!name || !data.email || !message) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid contact form data",
+    });
+  }
+
+  // ✅ normalize
+  data.name = name;
+  data.message = message;
+
+  // ❌ remove duplicates
+  delete data.firstName;
+  delete data.lastName;
+  delete data.Message;
+}
+
+
+
+    console.log("Mail data:", data);
+
+    await transporter.sendMail({
+      from: `"Website" <${process.env.MAIL_USER}>`,
+      to: process.env.ADMIN_MAIL,
+      subject: `New ${data.formType} request`,
+      html: emailTemplate(data.formType, data),
+    });
+
+    return res.json({ success: true });
+
+  } catch (error) {
+    console.error("Mail error:", error);
+    return res.status(500).json({ success: false });
+  }
+};
+
+
+app.post("/api/send-mail", sendMail);
+// mail API ends
+
 // Start server
 app.listen(3000, () => console.log('Server running on port 3000'));

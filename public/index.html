@@ -106,8 +106,7 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="serviceform" class="serviceform" action="https://formspree.io/f/mnnpnlry"
-                method="POST" autocomplete="off">
+                <form id="serviceform" class="serviceform" autocomplete="off">
                     <div class="form-group">
                         <input type="text" id="name" name="name" required placeholder="Enter Your Name" minlength="2" maxlength="15" pattern="^[A-Za-z\s]+$">
                     </div>
@@ -117,6 +116,7 @@
                     <div class="services-checkbox-list">
                         <div class="form-group form-group-service"></div>
                     </div>
+                    <p class="form-message" id="serviceMsg"></p>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Submit</button>
@@ -182,10 +182,10 @@
                     </div>
                 </div>
                 <div class="col col-12 col-lg-6">
-                    <h2 style="text-align: center;">Contact Us</h2>
+                    <!-- <h2 style="text-align: center;">Contact Us</h2> -->
                     <section id="contactsection" class="contactsection">
-                        <form id="contactForm" class="contact-form" action="https://formspree.io/f/mnnpnlry"
-                        method="POST" autocomplete="off">
+                        <h2 style="text-align: center;">Contact Us</h2>
+                        <form id="contactForm" class="contact-form" autocomplete="off">
                             <div class="form-group">
                                 <label for="firstName">First Name:</label>
                                 <input type="text" id="firstName" name="firstName" required placeholder="Enter your first name" minlength="2" maxlength="15">
@@ -212,8 +212,9 @@
             
                             <div class="form-group">
                                 <label for="Message">Message:</label>
-                                <textarea id="Message" name="Message" rows="4" cols="50" placeholder="Service Request" minlength="15" maxlength="30" required></textarea>
+                                <textarea id="Message" name="Message" rows="4" cols="50" placeholder="Service Request" minlength="15" maxlength="500" required></textarea>
                             </div>
+                            <p class="form-message" id="contactMsg"></p>
                             
                             <button type="submit">Submit</button>
                         </form>

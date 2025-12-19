@@ -8,6 +8,16 @@ const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 const app = express();
 
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+app.get('/login.html', (req, res) => {
+  res.redirect('/login');
+});
+app.get('/admin.html', (req, res) => {
+      res.redirect('/admin');
+});
+
 //login handler begins
 
 //session handler begins

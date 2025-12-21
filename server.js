@@ -350,6 +350,10 @@ export const sendMail = async (req, res) => {
     const data = req.body;
     console.log("RAW BODY:", req.body);
     console.log("Mail_HOST:", process.env.MAIL_HOST);
+    console.log("Mail_USER:", process.env.MAIL_USER);
+    console.log("Mail_ADMIN:", process.env.ADMIN_MAIL);
+    console.log("Mail_PORT:", process.env.MAIL_PORT);
+    console.log("Mail_PASS:", process.env.MAIL_PASS);
 
 
     // 🔴 Basic safety check

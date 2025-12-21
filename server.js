@@ -349,6 +349,7 @@ export const sendMail = async (req, res) => {
   try {
     const data = req.body;
     console.log("RAW BODY:", req.body);
+    console.log("Mail_HOST:", process.env.MAIL_HOST);
 
 
     // 🔴 Basic safety check

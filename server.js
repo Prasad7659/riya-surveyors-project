@@ -403,6 +403,10 @@ export const sendMail = async (req, res) => {
 
     console.log("Mail data:", data);
 
+    await transporter.verify();
+    console.log("SMTP connection verified");
+
+
     await transporter.sendMail({
       from: `"Website" <${process.env.MAIL_USER}>`,
       to: process.env.ADMIN_MAIL,

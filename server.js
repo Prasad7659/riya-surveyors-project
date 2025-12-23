@@ -6,6 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import multer from "multer";
 import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import dotenv from "dotenv";
 dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
@@ -303,15 +304,15 @@ app.delete('/delete-service/:folderName', (req, res) => {
 
 // mail API starts
 
-const transporter = nodemailer.createTransport({
-    host: process.env.MAIL_HOST,
-    port: process.env.MAIL_PORT,
-    secure: false,
-    auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
-    },
-});
+// const transporter = nodemailer.createTransport({
+//     host: process.env.MAIL_HOST,
+//     port: process.env.MAIL_PORT,
+//     secure: false,
+//     auth: {
+//         user: process.env.MAIL_USER,
+//         pass: process.env.MAIL_PASS,
+//     },
+// });
 
 function emailTemplate(formType, data) {
     let rows = "";
@@ -345,16 +346,94 @@ function emailTemplate(formType, data) {
     `;
 }
 
+// export const sendMail = async (req, res) => {
+//   try {
+//     const data = req.body;
+//     console.log("RAW BODY:", req.body);
+//     console.log("Mail_HOST:", process.env.MAIL_HOST);
+//     console.log("Mail_USER:", process.env.MAIL_USER);
+//     console.log("Mail_ADMIN:", process.env.ADMIN_MAIL);
+//     console.log("Mail_PORT:", process.env.MAIL_PORT);
+//     console.log("Mail_PASS:", process.env.MAIL_PASS);
+
+
+//     // 🔴 Basic safety check
+//     if (!data || !data.formType) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Missing form type",
+//       });
+//     }
+
+//     // 🔵 Service form validation
+//     if (data.formType === "service") {
+//       if (!data.name || !data.mobile || !data.service) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "Invalid service form data",
+//         });
+//       }
+//     }
+
+//     // 🟢 Contact form validation
+//     if (data.formType === "contact") {
+//   const name =
+//     data.name ||
+//     [data.firstName, data.lastName].filter(Boolean).join(" ");
+
+//   const message = data.message || data.Message;
+
+//   if (!name || !data.email || !message) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "Invalid contact form data",
+//     });
+//   }
+
+//   // ✅ normalize
+//   data.name = name;
+//   data.message = message;
+
+//   // ❌ remove duplicates
+//   delete data.firstName;
+//   delete data.lastName;
+//   delete data.Message;
+// }
+
+
+
+//     console.log("Mail data:", data);
+
+//     await transporter.verify();
+//     console.log("SMTP connection verified");
+
+
+//     await transporter.sendMail({
+//       from: `"Website" <${process.env.MAIL_USER}>`,
+//       to: process.env.ADMIN_MAIL,
+//       subject: `New ${data.formType} request`,
+//       html: emailTemplate(data.formType, data),
+//     });
+
+//     return res.json({ success: true });
+
+//   } catch (error) {
+//     console.error("Mail error:", error);
+//     return res.status(500).json({ success: false });
+//   }
+// };
+
+// mail API ends
+
+// Resend mail API starts
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 export const sendMail = async (req, res) => {
   try {
     const data = req.body;
-    console.log("RAW BODY:", req.body);
-    console.log("Mail_HOST:", process.env.MAIL_HOST);
+    console.log("RAW BODY:", data);
     console.log("Mail_USER:", process.env.MAIL_USER);
     console.log("Mail_ADMIN:", process.env.ADMIN_MAIL);
-    console.log("Mail_PORT:", process.env.MAIL_PORT);
-    console.log("Mail_PASS:", process.env.MAIL_PASS);
-
 
     // 🔴 Basic safety check
     if (!data || !data.formType) {
@@ -376,55 +455,52 @@ export const sendMail = async (req, res) => {
 
     // 🟢 Contact form validation
     if (data.formType === "contact") {
-  const name =
-    data.name ||
-    [data.firstName, data.lastName].filter(Boolean).join(" ");
+      const name =
+        data.name ||
+        [data.firstName, data.lastName].filter(Boolean).join(" ");
 
-  const message = data.message || data.Message;
+      const message = data.message || data.Message;
 
-  if (!name || !data.email || !message) {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid contact form data",
-    });
-  }
+      if (!name || !data.email || !message) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid contact form data",
+        });
+      }
 
-  // ✅ normalize
-  data.name = name;
-  data.message = message;
+      // ✅ normalize
+      data.name = name;
+      data.message = message;
 
-  // ❌ remove duplicates
-  delete data.firstName;
-  delete data.lastName;
-  delete data.Message;
-}
-
-
+      // ❌ remove duplicates
+      delete data.firstName;
+      delete data.lastName;
+      delete data.Message;
+    }
 
     console.log("Mail data:", data);
 
-    await transporter.verify();
-    console.log("SMTP connection verified");
-
-
-    await transporter.sendMail({
-      from: `"Website" <${process.env.MAIL_USER}>`,
+    // 📧 SEND MAIL USING RESEND
+    const response = await resend.emails.send({
+      from: `Website <${process.env.MAIL_USER}>`,
       to: process.env.ADMIN_MAIL,
       subject: `New ${data.formType} request`,
       html: emailTemplate(data.formType, data),
     });
 
+    console.log("Resend response:", response);
+
     return res.json({ success: true });
 
   } catch (error) {
-    console.error("Mail error:", error);
+    console.error("Resend mail error:", error);
     return res.status(500).json({ success: false });
   }
 };
 
 
+// Resend mail API ends
 app.post("/api/send-mail", sendMail);
-// mail API ends
 
 // Start server
 app.listen(3000, () => console.log('Server running on port 3000'));
